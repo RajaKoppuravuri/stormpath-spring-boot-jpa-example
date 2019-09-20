@@ -6,7 +6,7 @@ agent any
 //}
 tools { 
         maven 'jenkins-maven' 
-        jdk 'jdk8' 
+       // jdk 'jdk8' 
     }
 options {
   buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '10', daysToKeepStr: '', numToKeepStr: '10')
