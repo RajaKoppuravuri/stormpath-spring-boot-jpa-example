@@ -4,7 +4,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>demo</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>${artifact.version}</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
