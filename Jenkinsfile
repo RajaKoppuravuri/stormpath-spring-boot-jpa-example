@@ -1,21 +1,28 @@
 pipeline
 {
 agent any
-environment 
+
+parameters
 {
-    registry = "krmkumar/cicd_test"
-    registryCredential = 'dockerhub'
+  string defaultValue: '0.0.1-SNAPSHOT', description: 'Provide the artifact version', name: 'Arificat_version', trim: true
+}
+environment
+{
+    registry = "662738233441.dkr.ecr.us-east-2.amazonaws.com"
+    registry_url = "https://662738233441.dkr.ecr.us-east-2.amazonaws.com"
+    image_repo = "cicd_poc"
+    registryCredential = 'ecr:us-east-2:ecr_cred'
 }
 //triggers {
 	//cron('*/3 * * * *')
 //}
-tools { 
-        maven 'jenkins-maven' 
-        jdk 'jdk8' 
+tools {
+        maven 'jenkins-maven'
+        jdk 'jdk8'
     }
 options {
   buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '10', daysToKeepStr: '', numToKeepStr: '10')
-  //retry(3)  
+  //retry(3)
 }
 //parameters {
 //	choice (name: 'Build_object', choices: ['clean', 'compile', 'package'], description: 'This is for proving maven build objects')
@@ -27,13 +34,13 @@ stages
     {
         steps
         {
-            git branch:'master', url:'https://github.com/RajaKoppuravuri/stormpath-spring-boot-jpa-example.git', credentialsId:'GitHub'
+            git branch:'ecs', url:'https://github.com/RajaKoppuravuri/stormpath-spring-boot-jpa-example.git', credentialsId:'GitHub'
         }
     }
-    
+
 	stage ("Initialize")
-	{ 	
-	steps 
+	{
+	steps
 		{
 		 sh '''
                     echo "PATH = ${PATH}"
@@ -42,18 +49,18 @@ stages
                 '''
 		}
 	}
-	
-	
+
+
 	stage ("compile Code")
 	{
 	 steps {
 
 	  //echo "selected options ${params.Build_object}"
-	  
+
 	  //	sh 	"mvn ${params.Build_object}"
-      	sh 	"mvn package"
-	  
-	 } 
+      	sh 	"mvn clean compile package -Dartifact.version=${Arificat_version}"
+
+	 }
 	}
 
     stage ("Build Docker image")
@@ -62,8 +69,8 @@ stages
         {
             script
             {
-               
-               dockerImage=docker.build("$registry:$BUILD_NUMBER")
+
+               dockerImage=docker.build("$registry/$image_repo:$BUILD_NUMBER")
             }
         }
     }
@@ -73,9 +80,11 @@ stages
         steps
         {
             script
-            {
-               docker.withRegistry( '', registryCredential ) 
+            { 
+              sh("eval \$(aws ecr get-login --no-include-email --region us-east-2 | sed 's|https://||')")
+               docker.withRegistry(registry_url, registryCredential )
                {
+                   
                     dockerImage.push()
                }
             }
@@ -88,7 +97,7 @@ stages
         {
             script
             {
-                sh "docker rmi $registry:$BUILD_NUMBER"
+                sh "docker rmi $registry/$image_repo:$BUILD_NUMBER"
             }
         }
     }
@@ -97,7 +106,7 @@ post
 {
 	always
 	{
-		
+
 		 cleanWs(
                 cleanWhenAborted: false,
                 cleanWhenFailure: false,
