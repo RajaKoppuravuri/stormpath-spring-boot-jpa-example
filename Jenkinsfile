@@ -70,7 +70,7 @@ stages
             script
             {
 
-               dockerImage=docker.build("$registry/$image_repo:$BUILD_NUMBER")
+               dockerImage=docker.build("$registry/$image_repo:$BUILD_NUMBER", "--build-arg artifact_version=${Arificat_version} .")
             }
         }
     }
