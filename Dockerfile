@@ -1,6 +1,6 @@
 FROM centos:latest
 ARG artifact_version
-ENV arti_version = ${artifact_version}
+ENV arti_version=${artifact_version}
 ARG path_to_jar=./target
 RUN yum install java-1.8.0-openjdk.x86_64 -y
 #ADD ${path_to_jar}/demo-0.0.1-SNAPSHOT.jar /usr/lib/
