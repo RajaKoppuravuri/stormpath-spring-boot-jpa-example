@@ -30,6 +30,7 @@ You can see what urls are available using curl:
 
 ```sh
 $ curl localhost:8080
+Hello world
 ```
 
 You can view existing people objects using a similar request:
