@@ -29,7 +29,7 @@ from the root directory.
 You can see what urls are available using curl:
 
 ```sh
-$ curl localhost:8080
+$ curl localhost:8080/
 ```
 
 You can view existing people objects using a similar request:
